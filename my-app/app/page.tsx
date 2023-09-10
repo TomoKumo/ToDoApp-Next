@@ -36,12 +36,24 @@ const Page = () => {
     });
   }, []);
 
+  const handleNewRegistrationClick = () => {
+    router.push("/todo_new_registration");
+  }
+
+  const handleDetailClick = (todo_id: number) => {
+    router.push(`/todo_detail/${todo_id}`);
+  }
+
+  const handleEditClick = () => {
+    router.push("/todo_edit");
+  }
+
   return (
     <Box m={6}>
       <Heading as="h1" size="lg" fontWeight="bold">
         TODOリスト
       </Heading>
-      <Button>
+      <Button onClick={handleNewRegistrationClick}>
         新規登録
       </Button>
       <TableContainer>
@@ -61,8 +73,8 @@ const Page = () => {
                 <Td>{todo.todo_title}</Td>
                 <Td>{todo.todo_category}</Td>
                 <Td>
-                  <Button>詳細</Button>
-                  <Button>編集</Button>
+                  <Button onClick={() => handleDetailClick(todo.todo_id)}>詳細</Button>
+                  <Button onClick={handleEditClick}>編集</Button>
                   <Button>完了</Button>
                 </Td>
               </Tr>
