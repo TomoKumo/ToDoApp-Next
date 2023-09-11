@@ -69,9 +69,10 @@ const Page = () => {
         <Table variant='simple'>
           <Thead>
             <Tr>
-              <Th>ID</Th>
+              <Th>LIST NUMBER</Th>
               <Th>TODO</Th>
               <Th>CATEGORY</Th>
+              <Th>ID</Th>
               <Th></Th>
             </Tr>
           </Thead>
@@ -81,6 +82,7 @@ const Page = () => {
                 <Td>{index + 1}</Td>
                 <Td>{todo.todo_title}</Td>
                 <Td>{todo.todo_category}</Td>
+                <Td>{todo.todo_id}</Td>
                 <Td>
                   <Button onClick={() => handleDetailClick(todo.todo_id)}>詳細</Button>
                   <Button onClick={handleEditClick}>編集</Button>
