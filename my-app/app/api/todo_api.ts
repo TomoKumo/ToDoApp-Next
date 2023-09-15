@@ -26,3 +26,16 @@ export const handleCompleteAndDelete = async (todo_id: number, setTodos: React.D
   }
 };
 
+export const fetchCategories = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/api/get_all_category');
+    if (!response.ok) {
+      throw new Error('カテゴリ情報の取得に失敗しました');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('カテゴリ情報の取得にエラーが発生しました:', error);
+    throw error;
+  }
+};
