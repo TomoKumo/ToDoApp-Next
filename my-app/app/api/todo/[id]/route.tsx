@@ -1,9 +1,20 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET() {
-  const todos = await prisma.todo.findMany();
-  return NextResponse.json(todos);
+export async function GET( request: Request,{ params }: { params: { id: string } }) {
+  const id = params.id;
+
+  if (id) {
+    const todo = await prisma.todo.findUnique({
+      where: {
+        todo_id: Number(id), 
+      },
+    });
+
+    if (todo) {
+      return NextResponse.json(todo);
+    }
+  }  
 }
 
 export async function POST(request: Request) {
@@ -13,12 +24,12 @@ export async function POST(request: Request) {
   return NextResponse.json(req);
 }
 
-export async function DELETE(request: Request) {
-  const { id } = await request.json();
+export async function DELETE( request: Request,{ params }: { params: { id: string } }) {
+  const id = params.id;
 
   await prisma.todo.delete({
     where: {
-      todo_id: id, 
+      todo_id: Number(id), 
     },
   });
   return NextResponse.json({ message: 'ToDo deleted successfully' });

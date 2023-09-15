@@ -114,7 +114,7 @@ const Page = () => {
                               colorScheme='red' 
                               onClick={() => {
                                 onCompleteDialogClose(); 
-                                handleCompleteAndDelete(todo.todo_id); 
+                                handleCompleteAndDelete(todo.todo_id, setTodos); 
                               }}
                               ml={3}>
                                 完了し削除する
