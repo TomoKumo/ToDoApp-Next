@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { 
+import { useState, useEffect, useRef } from 'react';
+import {
   AlertDialog,
   AlertDialogBody,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
-  Box, 
+  Box,
   Button,
-  Heading, 
+  Heading,
   Table,
   Thead,
   Tbody,
@@ -20,20 +20,24 @@ import {
   TableContainer,
   useDisclosure,
   Input,
-  Select
+  Select,
 } from '@chakra-ui/react';
-import { useEffect, useState, useRef } from 'react';
-import { fetchCategories } from '../api/todo_api'; 
+import { fetchCategories, handleNewPost } from '../api/todo_api';
+import setTodos from '../page';
+import { useRouter } from 'next/navigation';
 
 function TodoNewRegistrationPage() {
-  const router = useRouter();
 
   type FocusableElement = any
 
+  const router = useRouter();
   const [categories, setCategories] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>(''); // 初期値を文字列に変更
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [newCategory, setNewCategory] = useState<string>('');
-  const [showNewCategoryInput, setShowNewCategoryInput] = useState<boolean>(false);
+  const [newTodo, setNewTodo] = useState<{ todo_title: string; todo_category: string }>({
+    todo_title: '',
+    todo_category: '',
+  });
 
   useEffect(() => {
     fetchCategories()
@@ -43,19 +47,42 @@ function TodoNewRegistrationPage() {
       .catch((error) => {
         console.error('カテゴリ情報の取得に失敗しました:', error);
       });
-  }, []); // 空の依存リストを使用して初回のみ実行
+  }, []);
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedCategory = event.target.value;
-    setSelectedCategory(selectedCategory);
-  };
+    setSelectedCategory(selectedCategory); // カテゴリを選択したら、selectedCategory を更新
+  
+    if (selectedCategory === '新しいカテゴリ') {
+      // 新しいカテゴリの場合、newCategory をセットし、selectedCategory はそのままにする
+      setNewTodo({
+        ...newTodo,
+        todo_category: newCategory,
+      });
+    } else {
+      // 既存のカテゴリを選択した場合、selectedCategory をセットし、newCategory は空の文字列にする
+      setNewTodo({
+        ...newTodo,
+        todo_category: selectedCategory,
+      });
+      setNewCategory(''); // 新しいカテゴリの入力欄をクリア
+    }
+  };  
 
   const { isOpen: isInterruptionDialogOpen, onOpen: onInterruptionDialogOpen, onClose: onInterruptionDialogClose } = useDisclosure();
   const InterruptionDialogCancelRef = useRef<FocusableElement | null>(null);
 
   const handleListClick = () => {
-    router.push("/");
-  }
+    router.push('/');
+  };
+
+  const handleNewTodoRegistration = async () => {
+    try {
+      await handleNewPost(newTodo, setTodos); 
+    } catch (error) {
+      console.error('エラーが発生しました: ', error);
+    }
+  };
 
   return (
     <Box m={6}>
@@ -73,7 +100,17 @@ function TodoNewRegistrationPage() {
           <Tbody>
             <Tr>
               <Td>
-                <Input variant='outline' placeholder='TO DO' />
+              <Input
+                variant='outline'
+                placeholder='TO DO'
+                value={newTodo.todo_title}
+                onChange={(e) =>
+                  setNewTodo({
+                    ...newTodo,
+                    todo_title: e.target.value,
+                  })
+                }
+              />
               </Td>
               <Td>
                 <Select
@@ -102,7 +139,7 @@ function TodoNewRegistrationPage() {
           </Tbody>
         </Table>
       </TableContainer>
-        <>
+      <>
         <Button colorScheme='red' onClick={onInterruptionDialogOpen}>
           リストに戻る
         </Button>
@@ -141,11 +178,16 @@ function TodoNewRegistrationPage() {
           </AlertDialogOverlay>
         </AlertDialog>
       </>
-       <Button 
-                
-              >
-                新規登録
-              </Button>
+      <Button
+        colorScheme='red'
+        onClick={() => {
+          handleListClick();
+          handleNewTodoRegistration();
+        }}
+        ml={3}
+      >
+        新規登録
+      </Button>
     </Box>
   );
 }

@@ -39,3 +39,25 @@ export const fetchCategories = async () => {
     throw error;
   }
 };
+
+export const handleNewPost = async (newTodo: { todo_title: string; todo_category: string }, setTodos: React.Dispatch<React.SetStateAction<todo[]>>) => {
+  try {
+    const response = await fetch('http://localhost:3000/api/new_post', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newTodo),
+    });
+
+    if (response.ok) {
+      console.log("ToDoを作成しました");
+      const createdTodo = await response.json();
+      setTodos((prevTodos) => [...prevTodos, createdTodo]);
+    } else {
+      console.error('ToDoの作成に失敗しました。');
+    }
+  } catch (error) {
+    console.error('エラーが発生しました: ', error);
+  }
+};
