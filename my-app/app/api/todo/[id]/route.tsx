@@ -17,13 +17,6 @@ export async function GET( request: Request,{ params }: { params: { id: string }
   }  
 }
 
-export async function POST(request: Request) {
-  const req = await request.json();
-  await prisma.todo.create({ data: req });
-
-  return NextResponse.json(req);
-}
-
 export async function DELETE( request: Request,{ params }: { params: { id: string } }) {
   const id = params.id;
 
