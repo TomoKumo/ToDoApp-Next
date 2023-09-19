@@ -12,8 +12,8 @@ datasource db {
 
 model todo {
   todo_id    Int     @id @default(autoincrement())
-  todo_category String  @unique
+  todo_category String
   todo_title String  
-  created_at DateTime
-  updated_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 }
