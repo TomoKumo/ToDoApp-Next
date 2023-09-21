@@ -47,8 +47,8 @@ const Page = () => {
     router.push(`/todo_detail/${todo_id}`);
   }
 
-  const handleEditClick = () => {
-    router.push("/todo_edit");
+  const handleEditClick = (todo_id: number) => {
+    router.push(`/todo_edit/${todo_id}`);
   }
 
   const { isOpen: isCompleteDialogOpen, onOpen: onCompleteDialogOpen, onClose: onCompleteDialogClose } = useDisclosure();
@@ -85,7 +85,7 @@ const Page = () => {
                 <Td>{todo.todo_id}</Td>
                 <Td>
                   <Button onClick={() => handleDetailClick(todo.todo_id)}>詳細</Button>
-                  <Button onClick={handleEditClick}>編集</Button>
+                  <Button onClick={() => handleEditClick(todo.todo_id)}>編集</Button>
                   <>
                     <Button colorScheme='red' onClick={onCompleteDialogOpen}>
                       完了
