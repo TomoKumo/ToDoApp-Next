@@ -12,6 +12,7 @@ import {
   AlertDialogOverlay,
   Box, 
   Button,
+  CircularProgress,
   Flex,
   Heading, 
   Table,
@@ -31,6 +32,19 @@ const Page = () => {
   type FocusableElement = any
 
   const router = useRouter();
+
+  const [isLoading, setIsLoading] = useState(false); 
+
+  useEffect(() => {
+    setIsLoading(true); 
+    fetchTodos()
+      .then((data) => {
+        setTodos(data);
+      })
+      .finally(() => {
+        setIsLoading(false); 
+      });
+  }, []);
 
   const [todos, setTodos] = useState<todo[]>([]);
 
@@ -60,136 +74,145 @@ const Page = () => {
   
   return (
     <Box m={10}>
-      <Heading as="h1" size="lg" fontWeight="bold">
-        TODOリスト
-      </Heading>
-      <Box mt={6} mb={6}>
-        <Button 
-          onClick={handleNewRegistrationClick}
-          colorScheme='teal'
-        >
-          新規登録
-        </Button>
-      </Box>
-        <TableContainer>
-          <Table variant='simple'>
-            <Thead>
-              <Tr>
-                <Th fontSize="lg">LIST NUMBER</Th>
-                <Th fontSize="lg">TODO</Th>
-                <Th fontSize="lg">CATEGORY</Th>
-                <Th fontSize="lg">ID</Th>
-                <Th></Th>
-                <Th></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {todos.map((todo, index)=> (
-                <Tr key={todo.todo_id}>
-                  <Td>{index + 1}</Td>
-                  <Td>{todo.todo_title}</Td>
-                  <Td>{todo.todo_category}</Td>
-                  <Td>{todo.todo_id}</Td>
-                  <Td></Td>
-                  <Td>
-                    <Button 
-                      onClick={() => handleDetailClick(todo.todo_id)}
-                      mr = {2}
-                      colorScheme='telegram'
-                    >
-                      詳細
-                    </Button>
-                    <Button 
-                      onClick={() => handleEditClick(todo.todo_id)}
-                      mr = {2}
-                      colorScheme='orange'
-                    >
-                      編集
-                    </Button>
-                    <>
-                      <Button colorScheme='red' onClick={onCompleteDialogOpen}>
-                        完了
-                      </Button>
+      {isLoading && (
+        <Flex justifyContent="center" alignItems="center" height="100vh">
+          <CircularProgress isIndeterminate color="teal" size="100px" thickness="4px" />
+        </Flex>
+      )}
+      {!isLoading && (
+        <>
+          <Heading as="h1" size="lg" fontWeight="bold">
+            TODOリスト
+          </Heading>
+          <Box mt={6} mb={6}>
+            <Button 
+              onClick={handleNewRegistrationClick}
+              colorScheme='teal'
+            >
+              新規登録
+            </Button>
+          </Box>
+            <TableContainer>
+              <Table variant='simple'>
+                <Thead>
+                  <Tr>
+                    <Th fontSize="lg">LIST NUMBER</Th>
+                    <Th fontSize="lg">TODO</Th>
+                    <Th fontSize="lg">CATEGORY</Th>
+                    <Th fontSize="lg">ID</Th>
+                    <Th></Th>
+                    <Th></Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {todos.map((todo, index)=> (
+                    <Tr key={todo.todo_id}>
+                      <Td>{index + 1}</Td>
+                      <Td>{todo.todo_title}</Td>
+                      <Td>{todo.todo_category}</Td>
+                      <Td>{todo.todo_id}</Td>
+                      <Td></Td>
+                      <Td>
+                        <Button 
+                          onClick={() => handleDetailClick(todo.todo_id)}
+                          mr = {2}
+                          colorScheme='telegram'
+                        >
+                          詳細
+                        </Button>
+                        <Button 
+                          onClick={() => handleEditClick(todo.todo_id)}
+                          mr = {2}
+                          colorScheme='orange'
+                        >
+                          編集
+                        </Button>
+                        <>
+                          <Button colorScheme='red' onClick={onCompleteDialogOpen}>
+                            完了
+                          </Button>
 
-                      <AlertDialog
-                        isOpen={isCompleteDialogOpen}
-                        leastDestructiveRef={completeDialogCancelRef}
-                        onClose={onCompleteDialogClose}
-                      >
-                        <AlertDialogOverlay>
-                          <AlertDialogContent>
-                            <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                              完了
-                            </AlertDialogHeader>
+                          <AlertDialog
+                            isOpen={isCompleteDialogOpen}
+                            leastDestructiveRef={completeDialogCancelRef}
+                            onClose={onCompleteDialogClose}
+                          >
+                            <AlertDialogOverlay>
+                              <AlertDialogContent>
+                                <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                                  完了
+                                </AlertDialogHeader>
 
-                            <AlertDialogBody>
-                              完了したためTODOを削除しますがよろしいですか？
-                            </AlertDialogBody>
+                                <AlertDialogBody>
+                                  完了したためTODOを削除しますがよろしいですか？
+                                </AlertDialogBody>
 
-                            <AlertDialogFooter>
-                              <Button ref={completeDialogCancelRef} onClick={onCompleteDialogClose}>
-                                キャンセル
-                              </Button>
-                              <Button 
-                                colorScheme='red' 
-                                onClick={() => {
-                                  onCompleteDialogClose(); 
-                                  handleCompleteAndDelete(todo.todo_id, setTodos); 
-                                }}
-                                ml={3}>
-                                  完了し削除する
-                              </Button>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialogOverlay>
-                      </AlertDialog>
-                    </>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      <>
-      <Flex justifyContent="flex-end">
-        <Button 
-          variant='outline'
-          colorScheme='red' 
-          borderWidth="2px"
-          onClick={onDeleteDialogOpen}
-          mt={10}
-          mr={10}
-        >
-          全削除
-        </Button>
-      </Flex>
-      <AlertDialog
-        isOpen={isDeleteDialogOpen}
-        leastDestructiveRef={deleteDialogCancelRef}
-        onClose={onDeleteDialogClose}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                                <AlertDialogFooter>
+                                  <Button ref={completeDialogCancelRef} onClick={onCompleteDialogClose}>
+                                    キャンセル
+                                  </Button>
+                                  <Button 
+                                    colorScheme='red' 
+                                    onClick={() => {
+                                      onCompleteDialogClose(); 
+                                      handleCompleteAndDelete(todo.todo_id, setTodos); 
+                                    }}
+                                    ml={3}>
+                                      完了し削除する
+                                  </Button>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialogOverlay>
+                          </AlertDialog>
+                        </>
+                      </Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          <>
+          <Flex justifyContent="flex-end">
+            <Button 
+              variant='outline'
+              colorScheme='red' 
+              borderWidth="2px"
+              onClick={onDeleteDialogOpen}
+              mt={10}
+              mr={10}
+            >
               全削除
-            </AlertDialogHeader>
+            </Button>
+          </Flex>
+          <AlertDialog
+            isOpen={isDeleteDialogOpen}
+            leastDestructiveRef={deleteDialogCancelRef}
+            onClose={onDeleteDialogClose}
+          >
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                  全削除
+                </AlertDialogHeader>
 
-            <AlertDialogBody>
-              全てのTODOを削除しますがよろしいですか？
-            </AlertDialogBody>
+                <AlertDialogBody>
+                  全てのTODOを削除しますがよろしいですか？
+                </AlertDialogBody>
 
-            <AlertDialogFooter>
-              <Button ref={deleteDialogCancelRef} onClick={onDeleteDialogClose}>
-                キャンセル
-              </Button>
-              <Button colorScheme='red' onClick={onDeleteDialogClose} ml={3}>
-                削除
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
-    </>
+                <AlertDialogFooter>
+                  <Button ref={deleteDialogCancelRef} onClick={onDeleteDialogClose}>
+                    キャンセル
+                  </Button>
+                  <Button colorScheme='red' onClick={onDeleteDialogClose} ml={3}>
+                    削除
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </AlertDialog>
+        </>
+      </>
+      )}
     </Box>
   );
 };
