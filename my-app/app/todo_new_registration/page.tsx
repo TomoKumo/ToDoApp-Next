@@ -89,58 +89,63 @@ function TodoNewRegistrationPage() {
       <Heading as="h1" size="lg" fontWeight="bold">
         TODO新規登録
       </Heading>
-      <TableContainer>
-        <Table variant='simple'>
-          <Thead>
-            <Tr>
-              <Th>TODO</Th>
-              <Th>CATEGORY</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            <Tr>
-              <Td>
-              <Input
-                variant='outline'
-                placeholder='TO DO'
-                value={newTodo.todo_title}
-                onChange={(e) =>
-                  setNewTodo({
-                    ...newTodo,
-                    todo_title: e.target.value,
-                  })
-                }
-              />
-              </Td>
-              <Td>
-                <Select
-                  placeholder='カテゴリ'
-                  value={selectedCategory}
-                  onChange={handleCategoryChange}
-                >
-                  <option value="">下記から選択してください</option>
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                  <option value='新しいカテゴリ'>新しいカテゴリを入力する</option>
-                </Select>
-                {selectedCategory === '新しいカテゴリ' && (
-                  <Input
-                    variant='outline'
-                    placeholder='新しいカテゴリを入力'
-                    value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value)}
-                  />
-                )}
-              </Td>
-            </Tr>
-          </Tbody>
-        </Table>
-      </TableContainer>
+      <Box mt={6} mb={6}>
+        <TableContainer>
+          <Table variant='simple'>
+            <Thead>
+              <Tr>
+                <Th fontSize="lg">TODO</Th>
+                <Th fontSize="lg">CATEGORY</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              <Tr>
+                <Td>
+                <Input
+                  variant='outline'
+                  placeholder='TO DO'
+                  value={newTodo.todo_title}
+                  onChange={(e) =>
+                    setNewTodo({
+                      ...newTodo,
+                      todo_title: e.target.value,
+                    })
+                  }
+                />
+                </Td>
+                <Td>
+                  <Select
+                    placeholder='カテゴリ'
+                    value={selectedCategory}
+                    onChange={handleCategoryChange}
+                  >
+                    <option value="">下記から選択してください</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                    <option value='新しいカテゴリ'>新しいカテゴリを入力する</option>
+                  </Select>
+                  {selectedCategory === '新しいカテゴリ' && (
+                    <Input
+                      variant='outline'
+                      placeholder='新しいカテゴリを入力'
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                    />
+                  )}
+                </Td>
+              </Tr>
+            </Tbody>
+          </Table>
+        </TableContainer>
+      </Box>
       <>
-        <Button colorScheme='red' onClick={onInterruptionDialogOpen}>
+        <Button 
+          colorScheme='telegram' 
+          onClick={onInterruptionDialogOpen}
+        >
           リストに戻る
         </Button>
 
@@ -164,7 +169,7 @@ function TodoNewRegistrationPage() {
                   キャンセル
                 </Button>
                 <Button 
-                  colorScheme='red' 
+                  colorScheme='telegram' 
                   onClick={() => {
                     onInterruptionDialogClose(); 
                     handleListClick(); 
@@ -179,7 +184,7 @@ function TodoNewRegistrationPage() {
         </AlertDialog>
       </>
       <Button
-        colorScheme='red'
+        colorScheme='teal'
         onClick={() => {
           handleListClick();
           handleNewTodoRegistration();

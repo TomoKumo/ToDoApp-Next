@@ -12,6 +12,7 @@ import {
   AlertDialogOverlay,
   Box, 
   Button,
+  Flex,
   Heading, 
   Table,
   Thead,
@@ -58,83 +59,110 @@ const Page = () => {
   const deleteDialogCancelRef = useRef<FocusableElement | null>(null);
   
   return (
-    <Box m={6}>
+    <Box m={10}>
       <Heading as="h1" size="lg" fontWeight="bold">
         TODOリスト
       </Heading>
-      <Button onClick={handleNewRegistrationClick}>
-        新規登録
-      </Button>
-      <TableContainer>
-        <Table variant='simple'>
-          <Thead>
-            <Tr>
-              <Th>LIST NUMBER</Th>
-              <Th>TODO</Th>
-              <Th>CATEGORY</Th>
-              <Th>ID</Th>
-              <Th></Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {todos.map((todo, index)=> (
-              <Tr key={todo.todo_id}>
-                <Td>{index + 1}</Td>
-                <Td>{todo.todo_title}</Td>
-                <Td>{todo.todo_category}</Td>
-                <Td>{todo.todo_id}</Td>
-                <Td>
-                  <Button onClick={() => handleDetailClick(todo.todo_id)}>詳細</Button>
-                  <Button onClick={() => handleEditClick(todo.todo_id)}>編集</Button>
-                  <>
-                    <Button colorScheme='red' onClick={onCompleteDialogOpen}>
-                      完了
-                    </Button>
-
-                    <AlertDialog
-                      isOpen={isCompleteDialogOpen}
-                      leastDestructiveRef={completeDialogCancelRef}
-                      onClose={onCompleteDialogClose}
-                    >
-                      <AlertDialogOverlay>
-                        <AlertDialogContent>
-                          <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                            完了
-                          </AlertDialogHeader>
-
-                          <AlertDialogBody>
-                            完了したためTODOを削除しますがよろしいですか？
-                          </AlertDialogBody>
-
-                          <AlertDialogFooter>
-                            <Button ref={completeDialogCancelRef} onClick={onCompleteDialogClose}>
-                              キャンセル
-                            </Button>
-                            <Button 
-                              colorScheme='red' 
-                              onClick={() => {
-                                onCompleteDialogClose(); 
-                                handleCompleteAndDelete(todo.todo_id, setTodos); 
-                              }}
-                              ml={3}>
-                                完了し削除する
-                            </Button>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialogOverlay>
-                    </AlertDialog>
-                  </>
-                </Td>
+      <Box mt={6} mb={6}>
+        <Button 
+          onClick={handleNewRegistrationClick}
+          colorScheme='teal'
+        >
+          新規登録
+        </Button>
+      </Box>
+        <TableContainer>
+          <Table variant='simple'>
+            <Thead>
+              <Tr>
+                <Th fontSize="lg">LIST NUMBER</Th>
+                <Th fontSize="lg">TODO</Th>
+                <Th fontSize="lg">CATEGORY</Th>
+                <Th fontSize="lg">ID</Th>
+                <Th></Th>
+                <Th></Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
-      <>
-      <Button colorScheme='red' onClick={onDeleteDialogOpen}>
-        全削除
-      </Button>
+            </Thead>
+            <Tbody>
+              {todos.map((todo, index)=> (
+                <Tr key={todo.todo_id}>
+                  <Td>{index + 1}</Td>
+                  <Td>{todo.todo_title}</Td>
+                  <Td>{todo.todo_category}</Td>
+                  <Td>{todo.todo_id}</Td>
+                  <Td></Td>
+                  <Td>
+                    <Button 
+                      onClick={() => handleDetailClick(todo.todo_id)}
+                      mr = {2}
+                      colorScheme='telegram'
+                    >
+                      詳細
+                    </Button>
+                    <Button 
+                      onClick={() => handleEditClick(todo.todo_id)}
+                      mr = {2}
+                      colorScheme='orange'
+                    >
+                      編集
+                    </Button>
+                    <>
+                      <Button colorScheme='red' onClick={onCompleteDialogOpen}>
+                        完了
+                      </Button>
 
+                      <AlertDialog
+                        isOpen={isCompleteDialogOpen}
+                        leastDestructiveRef={completeDialogCancelRef}
+                        onClose={onCompleteDialogClose}
+                      >
+                        <AlertDialogOverlay>
+                          <AlertDialogContent>
+                            <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                              完了
+                            </AlertDialogHeader>
+
+                            <AlertDialogBody>
+                              完了したためTODOを削除しますがよろしいですか？
+                            </AlertDialogBody>
+
+                            <AlertDialogFooter>
+                              <Button ref={completeDialogCancelRef} onClick={onCompleteDialogClose}>
+                                キャンセル
+                              </Button>
+                              <Button 
+                                colorScheme='red' 
+                                onClick={() => {
+                                  onCompleteDialogClose(); 
+                                  handleCompleteAndDelete(todo.todo_id, setTodos); 
+                                }}
+                                ml={3}>
+                                  完了し削除する
+                              </Button>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialogOverlay>
+                      </AlertDialog>
+                    </>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      <>
+      <Flex justifyContent="flex-end">
+        <Button 
+          variant='outline'
+          colorScheme='red' 
+          borderWidth="2px"
+          onClick={onDeleteDialogOpen}
+          mt={10}
+          mr={10}
+        >
+          全削除
+        </Button>
+      </Flex>
       <AlertDialog
         isOpen={isDeleteDialogOpen}
         leastDestructiveRef={deleteDialogCancelRef}
