@@ -19,7 +19,7 @@ import {
 import { fetchTodos } from '../../api/todo_api'; 
 import { useEffect, useState } from 'react';
 
-const Page = ({ params }: { params: { todo_id: string} }) => {
+const TodoDetailPage = ({ params }: { params: { todo_id: string} }) => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false); 
@@ -97,4 +97,4 @@ useEffect(() => {
   );
 };
 
-export default Page;
+export default TodoDetailPage;
