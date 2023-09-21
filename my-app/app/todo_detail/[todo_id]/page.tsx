@@ -58,7 +58,7 @@ const Page = ({ params }: { params: { todo_id: string} }) => {
                   <Td>{todoToShow.todo_id}</Td>
                 </Tr>
             ) : (
-              <p>TODOが見つかりませんでした。</p>
+              <Heading>TODOが見つかりませんでした。</Heading>
             )}
           </Tbody>
         </Table>

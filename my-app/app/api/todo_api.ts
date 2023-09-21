@@ -61,3 +61,23 @@ export const handleNewPost = async (newTodo: { todo_title: string; todo_category
     console.error('エラーが発生しました: ', error);
   }
 };
+
+export const handleSaveChanges = async (updatedTodo: { id: number, title: string, category: string }) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/todo/${updatedTodo.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedTodo),
+    });
+
+    if (response.ok) {
+      console.log('ToDoを更新しました');
+    } else {
+      console.error('ToDoの更新に失敗しました');
+    }
+  } catch (error) {
+    console.error('ToDo更新中にエラーが発生しました: ', error);
+  }
+};
