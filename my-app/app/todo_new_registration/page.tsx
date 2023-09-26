@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import {
@@ -27,8 +27,7 @@ import setTodos from '../page';
 import { useRouter } from 'next/navigation';
 
 function TodoNewRegistrationPage() {
-
-  type FocusableElement = any
+  type FocusableElement = any;
 
   const router = useRouter();
   const [categories, setCategories] = useState<string[]>([]);
@@ -38,6 +37,7 @@ function TodoNewRegistrationPage() {
     todo_title: '',
     todo_category: '',
   });
+  const [isNewCategorySelected, setIsNewCategorySelected] = useState(false); // 新しいカテゴリが選択されたかどうか
 
   useEffect(() => {
     fetchCategories()
@@ -51,23 +51,22 @@ function TodoNewRegistrationPage() {
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedCategory = event.target.value;
-    setSelectedCategory(selectedCategory); // カテゴリを選択したら、selectedCategory を更新
-  
+    setSelectedCategory(selectedCategory);
+
+    // 新しいカテゴリが選択されたら、一時的に newCategory を保持
     if (selectedCategory === '新しいカテゴリ') {
-      // 新しいカテゴリの場合、newCategory をセットし、selectedCategory はそのままにする
-      setNewTodo({
-        ...newTodo,
-        todo_category: newCategory,
-      });
+      setIsNewCategorySelected(true);
     } else {
-      // 既存のカテゴリを選択した場合、selectedCategory をセットし、newCategory は空の文字列にする
-      setNewTodo({
-        ...newTodo,
-        todo_category: selectedCategory,
-      });
+      setIsNewCategorySelected(false);
       setNewCategory(''); // 新しいカテゴリの入力欄をクリア
     }
-  };  
+
+    // newCategory の値を使って newTodo を更新
+    setNewTodo({
+      ...newTodo,
+      todo_category: selectedCategory === '新しいカテゴリ' ? newCategory : selectedCategory,
+    });
+  };
 
   const { isOpen: isInterruptionDialogOpen, onOpen: onInterruptionDialogOpen, onClose: onInterruptionDialogClose } = useDisclosure();
   const InterruptionDialogCancelRef = useRef<FocusableElement | null>(null);
@@ -76,9 +75,24 @@ function TodoNewRegistrationPage() {
     router.push('/');
   };
 
+  const handleNewCategoryInput = (input: string) => {
+    setNewCategory(input);
+
+    // newCategory の値を使って newTodo を更新
+    setNewTodo({
+      ...newTodo,
+      todo_category: input,
+    });
+  };
+
+  const handleNewCategoryConfirm = () => {
+    setIsNewCategorySelected(false); // 新しいカテゴリの選択を解除
+    setSelectedCategory(newCategory); // セレクトボックスの値を新しいカテゴリに更新
+  };
+
   const handleNewTodoRegistration = async () => {
     try {
-      await handleNewPost(newTodo, setTodos); 
+      await handleNewPost(newTodo, setTodos);
     } catch (error) {
       console.error('エラーが発生しました: ', error);
     }
@@ -91,7 +105,7 @@ function TodoNewRegistrationPage() {
       </Heading>
       <Box mt={6} mb={6}>
         <TableContainer>
-          <Table variant='simple'>
+          <Table variant="simple">
             <Thead>
               <Tr>
                 <Th fontSize="lg">TODO</Th>
@@ -101,21 +115,21 @@ function TodoNewRegistrationPage() {
             <Tbody>
               <Tr>
                 <Td>
-                <Input
-                  variant='outline'
-                  placeholder='TO DO'
-                  value={newTodo.todo_title}
-                  onChange={(e) =>
-                    setNewTodo({
-                      ...newTodo,
-                      todo_title: e.target.value,
-                    })
-                  }
-                />
+                  <Input
+                    variant="outline"
+                    placeholder="TO DO"
+                    value={newTodo.todo_title}
+                    onChange={(e) =>
+                      setNewTodo({
+                        ...newTodo,
+                        todo_title: e.target.value,
+                      })
+                    }
+                  />
                 </Td>
                 <Td>
                   <Select
-                    placeholder='カテゴリ'
+                    placeholder="カテゴリ"
                     value={selectedCategory}
                     onChange={handleCategoryChange}
                   >
@@ -125,15 +139,22 @@ function TodoNewRegistrationPage() {
                         {category}
                       </option>
                     ))}
-                    <option value='新しいカテゴリ'>新しいカテゴリを入力する</option>
+                    <option value="新しいカテゴリ">新しいカテゴリを入力する</option>
                   </Select>
-                  {selectedCategory === '新しいカテゴリ' && (
-                    <Input
-                      variant='outline'
-                      placeholder='新しいカテゴリを入力'
-                      value={newCategory}
-                      onChange={(e) => setNewCategory(e.target.value)}
-                    />
+                  {isNewCategorySelected && (
+                    <Box display="flex" flexDirection="column">
+                      <>
+                        <Input
+                          variant="outline"
+                          placeholder="新しいカテゴリを入力"
+                          value={newCategory}
+                          onChange={(e) => handleNewCategoryInput(e.target.value)}
+                        />
+                        <Button mt={2} size="sm" onClick={handleNewCategoryConfirm}>
+                          確定
+                        </Button>
+                      </>
+                    </Box>         
                   )}
                 </Td>
               </Tr>
@@ -142,10 +163,7 @@ function TodoNewRegistrationPage() {
         </TableContainer>
       </Box>
       <>
-        <Button 
-          colorScheme='telegram' 
-          onClick={onInterruptionDialogOpen}
-        >
+        <Button colorScheme="telegram" onClick={onInterruptionDialogOpen}>
           リストに戻る
         </Button>
 
@@ -156,23 +174,21 @@ function TodoNewRegistrationPage() {
         >
           <AlertDialogOverlay>
             <AlertDialogContent>
-              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">
                 リストに戻る
               </AlertDialogHeader>
 
-              <AlertDialogBody>
-                作業を中断してTODOリストに戻りますか？
-              </AlertDialogBody>
+              <AlertDialogBody>作業を中断してTODOリストに戻りますか？</AlertDialogBody>
 
               <AlertDialogFooter>
                 <Button ref={InterruptionDialogCancelRef} onClick={onInterruptionDialogClose}>
                   キャンセル
                 </Button>
-                <Button 
-                  colorScheme='telegram' 
+                <Button
+                  colorScheme="telegram"
                   onClick={() => {
-                    onInterruptionDialogClose(); 
-                    handleListClick(); 
+                    onInterruptionDialogClose();
+                    handleListClick();
                   }}
                   ml={3}
                 >
@@ -184,7 +200,7 @@ function TodoNewRegistrationPage() {
         </AlertDialog>
       </>
       <Button
-        colorScheme='teal'
+        colorScheme="teal"
         onClick={() => {
           handleListClick();
           handleNewTodoRegistration();
