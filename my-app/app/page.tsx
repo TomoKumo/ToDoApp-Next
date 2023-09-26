@@ -1,7 +1,7 @@
 'use client';
 
 import { todo } from '@prisma/client';
-import { handleCompleteAndDelete } from './api/todo_api';
+import { handleCompleteAndDelete,handleDeleteAllClick } from './api/todo_api';
 import { useRouter } from 'next/navigation';
 import { 
   AlertDialog,
@@ -203,7 +203,12 @@ const Page = () => {
                   <Button ref={deleteDialogCancelRef} onClick={onDeleteDialogClose}>
                     キャンセル
                   </Button>
-                  <Button colorScheme='red' onClick={onDeleteDialogClose} ml={3}>
+                  <Button colorScheme='red' 
+                  onClick={() => {
+                    onDeleteDialogClose();
+                    handleDeleteAllClick();
+                    router.push("/");
+                  }} ml={3}>
                     削除
                   </Button>
                 </AlertDialogFooter>

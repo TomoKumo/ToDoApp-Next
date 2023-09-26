@@ -44,6 +44,7 @@ const TodoEditPage = ({ params }: { params: { todo_id: string } }) => {
     todo_category: '',
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isNewCategorySelected, setIsNewCategorySelected] = useState(false); // 新しいカテゴリが選択されたかどうか
 
   const todo_id = params.todo_id;
 
@@ -53,10 +54,10 @@ const TodoEditPage = ({ params }: { params: { todo_id: string } }) => {
   const handleListClick = () => {
     router.push('/');
   };
- 
+
   useEffect(() => {
     setIsLoading(true); // ローディングを開始
-  
+
     // カテゴリ情報の取得
     fetchCategories()
       .then((categoryData) => {
@@ -65,7 +66,7 @@ const TodoEditPage = ({ params }: { params: { todo_id: string } }) => {
       .catch((error) => {
         console.error('カテゴリ情報の取得に失敗しました:', error);
       });
-  
+
     // TODO情報の取得
     fetchTodos()
       .then((todoData) => {
@@ -83,7 +84,6 @@ const TodoEditPage = ({ params }: { params: { todo_id: string } }) => {
         setIsLoading(false); // ローディングを終了
       });
   }, [todo_id]);
-  
 
   return (
     <Box m={6}>
@@ -117,38 +117,44 @@ const TodoEditPage = ({ params }: { params: { todo_id: string } }) => {
                         />
                       </Td>
                       <Td>
-                      <Select
-                        defaultValue={todoToShow.todo_category}
-                        onChange={(e) => {
-                          const selectedValue = e.target.value;
-                          setSelectedCategory(selectedValue);
-                          
-                          if (selectedValue === '新しいカテゴリ') {
-                            setNewCategory(''); // 新しいカテゴリが選択された場合、newCategory をクリア
-                            setNewTodo({ ...newTodo, todo_category: '' }); // todo_category をクリア
-                          } else {
-                            setUpdatedCategory(selectedValue);
-                            setNewTodo({ ...newTodo, todo_category: selectedValue });
-                          }
-                        }}
+                        <Select
+                          defaultValue={selectedCategory}
+                          onChange={(e) => {
+                            const selectedValue = e.target.value;
+                            setSelectedCategory(selectedValue);
+
+                            if (selectedValue === '新しいカテゴリ') {
+                              // 新しいカテゴリが選択された場合、新しいカテゴリを入力値に設定
+                              setIsNewCategorySelected(true);
+                              setUpdatedCategory(newCategory);
+                            } else {
+                              // 既存のカテゴリが選択された場合、選択したカテゴリを更新値に設定
+                              setIsNewCategorySelected(false);
+                              setUpdatedCategory(selectedValue);
+                            }
+                          }}
                         >
-                        <option value="">下記から選択してください</option>
-                        {categories.map((category) => (
-                          <option key={category} value={category}>
-                            {category}
-                          </option>
-                        ))}
-                        <option value='新しいカテゴリ'>新しいカテゴリを入力する</option>
-                      </Select>
-                      {selectedCategory === '新しいカテゴリ' && (
-                        <Input
-                          variant='outline'
-                          placeholder='新しいカテゴリを入力'
-                          value={newCategory}
-                          onChange={(e) => setNewCategory(e.target.value)}
-                        />
-                      )}
-                    </Td>
+                          <option value="">下記から選択してください</option>
+                          {categories.map((category) => (
+                            <option key={category} value={category}>
+                              {category}
+                            </option>
+                          ))}
+                          <option value='新しいカテゴリ'>新しいカテゴリを入力する</option>
+                        </Select>
+                        {isNewCategorySelected && (
+                          <Input
+                            variant='outline'
+                            placeholder='新しいカテゴリを入力'
+                            value={newCategory}
+                            onChange={(e) => {
+                              const inputText = e.target.value;
+                              setNewCategory(inputText);
+                              setUpdatedCategory(inputText); // 新しいカテゴリが選択されたら、updatedCategory を新しいカテゴリに設定
+                            }}
+                          />
+                        )}
+                      </Td>
                       <Td>{todoToShow.todo_id}</Td>
                     </Tr>
                   ) : (
@@ -163,7 +169,7 @@ const TodoEditPage = ({ params }: { params: { todo_id: string } }) => {
               colorScheme='telegram' 
               onClick={onInterruptionDialogOpen}
               ml={2}
-              >
+            >
               リストに戻る
             </Button>
 
@@ -186,7 +192,7 @@ const TodoEditPage = ({ params }: { params: { todo_id: string } }) => {
                   </AlertDialogBody>
 
                   <AlertDialogFooter>
-                    <Button ref={InterruptionDialogCancelRef} onClick={onInterruptionDialogClose}>
+                  <Button ref={InterruptionDialogCancelRef} onClick={onInterruptionDialogClose}>
                       キャンセル
                     </Button>
                     <Button
@@ -204,21 +210,21 @@ const TodoEditPage = ({ params }: { params: { todo_id: string } }) => {
               </AlertDialogOverlay>
             </AlertDialog>
           </>
-            <Button
-              colorScheme='teal'
-              ml={2}
-              onClick={() => {
-                const updatedTodo = {
-                  id: Number(todo_id),
-                  title: updatedTitle,
-                  category: updatedCategory,
-                };
-                handleListClick();
-                handleSaveChanges(updatedTodo);
-              }}
-            >
-              登録する
-            </Button>
+          <Button
+            colorScheme='teal'
+            ml={2}
+            onClick={() => {
+              const updatedTodo = {
+                id: Number(todo_id),
+                title: updatedTitle,
+                category: updatedCategory,
+              };
+              handleListClick();
+              handleSaveChanges(updatedTodo);
+            }}
+          >
+            登録する
+          </Button>
         </>
       )}  
     </Box>
@@ -226,3 +232,4 @@ const TodoEditPage = ({ params }: { params: { todo_id: string } }) => {
 };
 
 export default TodoEditPage;
+

@@ -1,4 +1,5 @@
 import { todo } from '@prisma/client';
+import { useRouter } from 'next/navigation';
 
 export const fetchTodos = async (): Promise<todo[]> => {
   const response = await fetch('http://localhost:3000/api/get_all');
@@ -79,5 +80,23 @@ export const handleSaveChanges = async (updatedTodo: { id: number, title: string
     }
   } catch (error) {
     console.error('ToDo更新中にエラーが発生しました: ', error);
+  }
+};
+
+export const handleDeleteAllClick = async () => {
+
+  try {
+    const response = await fetch('/api/delete_all', {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      console.log('全てのデータが削除されました');
+      
+    } else {
+      console.error('データの削除に失敗しました。');
+    }
+  } catch (error) {
+    console.error('エラーが発生しました: ', error);
   }
 };
